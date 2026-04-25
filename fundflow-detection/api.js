@@ -1,7 +1,7 @@
 // api.js — connects frontend to backend
 // Save in: fundflow-fraud-detection/api.js
 
-const API = 'http://127.0.0.1:8000';
+const API = 'https://fundflow-project.onrender.com';
 
 // Load real accounts from backend DB
 async function loadAccountsFromBackend() {
@@ -65,7 +65,7 @@ async function generateReportFromBackend(caseId) {
 
 // Connect WebSocket for live transactions
 function connectLiveStream() {
-  const ws = new WebSocket('ws://127.0.0.1:8000/ws/stream');
+  const ws = new WebSocket('wss://fundflow-project.onrender.com/ws/stream');
   ws.onopen = () => console.log('Live stream connected');
   ws.onmessage = (e) => {
     const msg = JSON.parse(e.data);

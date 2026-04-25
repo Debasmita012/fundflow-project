@@ -6,7 +6,7 @@
 let aiChatOpen = false;
 let aiChatHistory = [];
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = 'https://fundflow-project.onrender.com';
 
 const SYSTEM_PROMPT = `You are an expert financial crime investigator AI co-assistant for the FundFlow platform at a bank.
 You have deep knowledge of money laundering patterns, AML regulations (PMLA 2002), and fraud detection.
