@@ -52,4 +52,5 @@ async def resolve_alert(alert_id: int, db: AsyncSession = Depends(get_db)):
     if not alert:
         raise HTTPException(404, "Alert not found")
     alert.resolved = True
+    await db.commit()
     return {"status": "resolved", "id": alert_id}

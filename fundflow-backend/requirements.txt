@@ -35,3 +35,7 @@ httpx==0.28.0
 
 # Optional — only needed if you install Kafka later
 # aiokafka==0.11.0
+
+# Gemini AI
+google-generativeai==0.4.1
+python-multipart==0.0.9

@@ -324,14 +324,40 @@ function initFullGraph() {
     .attr('stroke-width', d => Math.max(1.5, Math.min(d.amount / 80000, 5)))
     .attr('marker-end', d => d.amount > 400000 ? 'url(#arrow-FF4757)'
                            : d.amount > 200000 ? 'url(#arrow-F5A623)'
-                           : 'url(#arrow-4F9EFF)');
+                           : 'url(#arrow-4F9EFF)')
+    .style('cursor', 'pointer')
+    .on('mouseover', function(e, d) { d3.select(this).attr('stroke-opacity', 1).attr('stroke-width', parseFloat(d3.select(this).attr('stroke-width')) + 2); })
+    .on('mouseout', function(e, d) { d3.select(this).attr('stroke-opacity', null).attr('stroke-width', Math.max(1.5, Math.min(d.amount / 80000, 5))); });
+
+  // Add native tooltip to edges
+  link.append('title')
+    .text(d => `Amount: ₹${d.amount.toLocaleString('en-IN')}\nChannel: ${d.channel}`);
 
   const nodeGroup = g.append('g').selectAll('g').data(nodes).enter().append('g')
     .style('cursor', 'pointer');
 
   nodeGroup.append('circle')
-    .attr('r', 10)
-    .attr('fill', d => riskColorMap[d.risk]);
+    .attr('r', 12)
+    .attr('fill', d => riskColorMap[d.risk])
+    .attr('stroke', '#1A1A2E')
+    .attr('stroke-width', 2)
+    .style('transition', 'r 0.2s')
+    .on('mouseover', function() { d3.select(this).attr('r', 16); })
+    .on('mouseout', function() { d3.select(this).attr('r', 12); });
+
+  // Add native tooltip to nodes
+  nodeGroup.append('title')
+    .text(d => `${d.name}\nType: ${d.type}\nRisk: ${d.riskScore}/100\nConnections: ${d.connections}`);
+
+  // Add text labels underneath nodes
+  nodeGroup.append('text')
+    .text(d => d.name.length > 10 ? d.name.slice(0, 10) + '…' : d.name)
+    .attr('font-family', 'DM Sans, sans-serif')
+    .attr('font-size', '10px')
+    .attr('fill', '#E0E0E0')
+    .attr('text-anchor', 'middle')
+    .attr('dy', 22)
+    .style('pointer-events', 'none');
 
   // ✅ MODIFIED CLICK HANDLER
   nodeGroup.on('click', (e, d) => { 

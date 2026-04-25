@@ -54,43 +54,42 @@ function executeVoiceAction(action, transcript) {
         triggerFraudFlash(fraudIds);
       }
       switchView('graph');
-      speak('Highlighting ' + (typeof accounts !== 'undefined' ? accounts.filter(a => a.risk === 'fraud').length : 4) + ' fraud accounts on the graph.');
+      updateVoiceTranscript('Highlighted ' + (typeof accounts !== 'undefined' ? accounts.filter(a => a.risk === 'fraud').length : 4) + ' fraud accounts');
       break;
     case 'highlightSuspicious':
       switchView('graph');
-      speak('Highlighting suspicious accounts. 4 accounts flagged with risk scores above 55.');
+      updateVoiceTranscript('Showing suspicious accounts');
       break;
-    case 'openInvestigation': switchView('investigation'); speak('Opening investigation suite for case FD-2026-00842.'); break;
-    case 'openGraph': switchView('graph'); speak('Opening transaction graph view.'); break;
-    case 'openDashboard': switchView('dashboard'); speak('Opening dashboard.'); break;
-    case 'openRings': switchView('rings'); speak('Opening fraud ring detection view. 2 confirmed rings detected.'); break;
-    case 'openAlerts': switchView('alerts'); speak('Opening alert queue. 12 active alerts.'); break;
-    case 'openReports': switchView('reports'); speak('Opening FIU report generator.'); break;
-    case 'openFlow': switchView('flow'); setTimeout(playMoneyFlow, 500); speak('Opening money flow animation.'); break;
+    case 'openInvestigation': switchView('investigation'); updateVoiceTranscript('Opened Investigation Suite'); break;
+    case 'openGraph': switchView('graph'); updateVoiceTranscript('Opened Graph View'); break;
+    case 'openDashboard': switchView('dashboard'); updateVoiceTranscript('Opened Dashboard'); break;
+    case 'openRings': switchView('rings'); updateVoiceTranscript('Opened Fraud Rings'); break;
+    case 'openAlerts': switchView('alerts'); updateVoiceTranscript('Opened Alert Queue'); break;
+    case 'openReports': switchView('reports'); updateVoiceTranscript('Opened FIU Reports'); break;
+    case 'openFlow': switchView('flow'); setTimeout(playMoneyFlow, 500); updateVoiceTranscript('Playing Money Flow'); break;
     case 'readFindings': readTopFindings(); break;
     case 'highlightA001':
       switchView('graph');
-      speak('Highlighting A001 Rajesh Mehta Enterprises. Risk score 84 out of 100. Round-trip pattern detected with 3.07 times income mismatch.');
+      updateVoiceTranscript('Highlighted A001 — Rajesh Mehta · Risk 84');
       break;
     case 'highlightA002':
       switchView('graph');
-      speak('Highlighting A002 Shell Corp A. Risk score 92 out of 100. No declared business purpose. Registered 3 months ago.');
+      updateVoiceTranscript('Highlighted A002 — Shell Corp A · Risk 92');
       break;
     case 'highlightA016':
       switchView('graph');
-      speak('Highlighting A016 Mule Account X1. Risk score 95 out of 100. 45 lakh rupees flowing through a student savings account.');
+      updateVoiceTranscript('Highlighted A016 — Mule X1 · Risk 95');
       break;
     case 'zoomIn':
-      speak('Zooming in on the graph.');
+      updateVoiceTranscript('Zoomed in');
       break;
     case 'zoomOut':
-      speak('Zooming out.');
+      updateVoiceTranscript('Zoomed out');
       break;
     case 'stop': stopVoice(); return;
     default:
-      speak('I heard: ' + transcript + '. I am not sure what to do with that. Try saying: show fraud, open investigation, or read findings.');
+      updateVoiceTranscript('Unknown: ' + transcript);
   }
-  updateVoiceTranscript('Done: ' + transcript);
 }
 
 function readTopFindings() {
@@ -104,6 +103,8 @@ function readTopFindings() {
   updateVoiceTranscript('Reading top 3 findings...');
 }
 
+let isSpeaking = false;
+
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
@@ -111,6 +112,11 @@ function speak(text) {
   utterance.rate = 0.95;
   utterance.pitch = 1.0;
   utterance.volume = 0.9;
+  
+  utterance.onstart = () => { isSpeaking = true; };
+  utterance.onend = () => { isSpeaking = false; };
+  utterance.onerror = () => { isSpeaking = false; };
+
   // Prefer a clear voice
   const voices = window.speechSynthesis.getVoices();
   const preferred = voices.find(v => v.name.includes('Google') || v.name.includes('Neural') || v.lang === 'en-IN');
@@ -151,10 +157,11 @@ function startVoice() {
     const modal = document.getElementById('voiceModal');
     if (modal) modal.style.display = 'flex';
     updateVoiceTranscript('Listening...');
-    speak('Voice investigation active. How can I help?');
+    speak('Start speaking');
   };
 
   recognition.onresult = (e) => {
+    if (isSpeaking) return; // Prevent bot from hearing its own voice
     let interim = '';
     let final = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -170,7 +177,7 @@ function startVoice() {
       if (action) {
         executeVoiceAction(action, final.trim());
       } else {
-        speak('Command not recognised: ' + final);
+        updateVoiceTranscript('Not recognised: ' + final.trim());
       }
     }
   };
