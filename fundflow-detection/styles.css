@@ -707,7 +707,7 @@ body.light-theme .graph-fullscreen  { background: var(--gradient-graph-bg); }
 /* --- Tablet / Hide sidebar, show bottom nav --- */
 @media (max-width: 1023px) {
   .sidebar { display: none; }
-  .mobile-bottom-nav { display: flex; }
+  .mobile-bottom-nav { display: flex !important; }
   .main-content {
     padding: 16px 16px 80px 16px;
   }
