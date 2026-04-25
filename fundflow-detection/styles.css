@@ -807,9 +807,16 @@ body.light-theme .graph-fullscreen  { background: var(--gradient-graph-bg); }
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   z-index: 9000;
   align-items: center;
-  justify-content: space-around;
-  padding: 0 8px;
+  justify-content: flex-start;
+  padding: 0 16px;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+.mobile-bottom-nav::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .mobile-nav-item {
@@ -824,7 +831,8 @@ body.light-theme .graph-fullscreen  { background: var(--gradient-graph-bg); }
   transition: all 0.2s ease;
   text-decoration: none;
   color: var(--icon-default);
-  min-width: 52px;
+  min-width: 64px;
+  flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
 .mobile-nav-item:active { transform: scale(0.92); }
